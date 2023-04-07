@@ -8,13 +8,11 @@
 import UIKit
 
 class ViewController: UIViewController {
-   
+    
     enum Turn {
         case Nought
         case Cross
     }
-    
-    
     
     // MARK: -VARIABLES
     @IBOutlet weak var turnLabel: UILabel!
@@ -39,6 +37,10 @@ class ViewController: UIViewController {
     var CROSS  = "X"
     var board = [UIButton]()
     
+    
+    var nougthsScore = 0
+    var crossesScore = 0
+    
     // MARK: - FUNCTIONS
     
     override func viewDidLoad() {
@@ -46,7 +48,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         setInitViews()
     }
-
+    
     private func setInitViews(){
         
         board.append(a1)
@@ -58,28 +60,86 @@ class ViewController: UIViewController {
         board.append(c1)
         board.append(c2)
         board.append(c3)
-        
-        
     }
-    
+
     
     @IBAction func boardTapAction(_ sender: UIButton) {
         addToBoard(sender)
+        
+        if checkForVictory(CROSS) {
+            resultAlert(title: "Crosses Win")
+            crossesScore += 1
+        }
+        
+        if checkForVictory(NOUGHT) {
+            resultAlert(title: "Nought Win")
+            nougthsScore += 1
+        }
         
         if fullBoard() {
             resultAlert(title: "Draw")
         }
     }
     
+    
+    func checkForVictory(_ s: String) -> Bool {
+        
+        // Horizontal
+        if thisSymbol(a1, s) && thisSymbol(a2, s) && thisSymbol(a3, s) {
+            return true
+        }
+        
+        if thisSymbol(b1, s) && thisSymbol(b2, s) && thisSymbol(b3, s) {
+            return true
+        }
+        
+        if thisSymbol(c1, s) && thisSymbol(c2, s) && thisSymbol(c3, s) {
+            return true
+        }
+        
+        
+        // Vertical
+        if thisSymbol(a1, s) && thisSymbol(b1, s) && thisSymbol(c1, s) {
+            return true
+        }
+        
+        if thisSymbol(a2, s) && thisSymbol(b2, s) && thisSymbol(c2, s) {
+            return true
+        }
+        
+        if thisSymbol(a3, s) && thisSymbol(b3, s) && thisSymbol(c3, s) {
+            return true
+        }
+        
+        
+        // Diagonal
+        if thisSymbol(a1, s) && thisSymbol(b2, s) && thisSymbol(c3, s) {
+            return true
+        }
+        if thisSymbol(a3, s) && thisSymbol(b2, s) && thisSymbol(c1, s) {
+            return true
+        }
+        
+        return false
+    }
+    
+    func thisSymbol(_ button: UIButton, _ symbol: String) -> Bool {
+        
+        return button.title(for: .normal) == symbol
+        
+    }
+    
     private func resultAlert(title:String) {
         
-        let ac = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+        let message = "\nNoughts " + String(nougthsScore) + "\n\nCrosses " + String(crossesScore)
+        
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
         ac.addAction(UIAlertAction(title: "Reset", style: .default, handler: { _ in
             self.resetBoard()
         }))
         self.present(ac, animated: true)
     }
-
+    
     private func resetBoard(){
         
         for button in board {
@@ -109,7 +169,7 @@ class ViewController: UIViewController {
         return true
     }
     
-   private func addToBoard(_ sender: UIButton) {
+    private func addToBoard(_ sender: UIButton) {
         if sender.title(for: .normal) == nil {
             if currentTurn == Turn.Nought {
                 sender.setTitle(NOUGHT, for: .normal)
@@ -123,6 +183,6 @@ class ViewController: UIViewController {
         }
     }
     
-
+    
 }
 
